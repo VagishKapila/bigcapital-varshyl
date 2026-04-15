@@ -1,0 +1,93 @@
+# BigCapital — Railway Deployment Compose
+# Optimized for Railway: uses pre-built Docker Hub images for webapp + server,
+# Railway-managed MySQL (MariaDB) and Redis plugins, plus Gotenberg for PDF.
+#
+# Services deployed:
+#   1. webapp     — bigcapitalhq/webapp:latest     (React frontend)
+#   2. server     — bigcapitalhq/server:latest     (Node.js API)
+#   3. mysql      — Railway MySQL plugin (MariaDB)
+#   4. redis      — Railway Redis plugin
+#   5. gotenberg  — gotenberg/gotenberg:7           (PDF generator)
+
+version: '3.8'
+
+services:
+  webapp:
+    image: bigcapitalhq/webapp:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - bigcapital
+
+  server:
+    image: bigcapitalhq/server:latest
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-3000}:3000"
+    environment:
+      # App
+      - NODE_ENV=production
+      - BASE_URL=${BASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
+      # Database (Railway MySQL plugin injects DATABASE_URL automatically)
+      - DB_HOST=${MYSQLHOST}
+      - DB_PORT=${MYSQLPORT}
+      - DB_USER=${MYSQLUSER}
+      - DB_PASSWORD=${MYSQLPASSWORD}
+      - DB_CHARSET=utf8
+      - SYSTEM_DB_NAME=${MYSQLDATABASE}
+      - TENANT_DB_NAME_PERFIX=bigcapital_tenant_
+
+      # Redis (Railway Redis plugin injects REDIS_URL automatically)
+      - REDIS_HOST=${REDISHOST}
+      - REDIS_PORT=${REDISPORT}
+      - QUEUE_HOST=${REDISHOST}
+      - QUEUE_PORT=${REDISPORT}
+
+      # Mail
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_SECURE=${MAIL_SECURE:-false}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-BigCapital}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+
+      # PDF (Gotenberg)
+      - GOTENBERG_URL=http://gotenberg:3000
+      - GOTENBERG_DOCS_URL=http://server:3000/public/
+
+      # Sign-up
+      - SIGNUP_DISABLED=${SIGNUP_DISABLED:-false}
+      - SIGNUP_EMAIL_CONFIRMATION=${SIGNUP_EMAIL_CONFIRMATION:-false}
+
+      # Exchange Rate
+      - EXCHANGE_RATE_SERVICE=open-exchange-rate
+      - OPEN_EXCHANGE_RATE_APP_ID=${OPEN_EXCHANGE_RATE_APP_ID}
+
+      # Plaid (Session 4)
+      - BANK_FEED_ENABLED=${BANK_FEED_ENABLED:-false}
+      - PLAID_ENV=${PLAID_ENV:-sandbox}
+      - PLAID_CLIENT_ID=${PLAID_CLIENT_ID}
+      - PLAID_SECRET=${PLAID_SECRET}
+      - PLAID_LINK_WEBHOOK=${PLAID_LINK_WEBHOOK}
+    depends_on:
+      - gotenberg
+    networks:
+      - bigcapital
+
+  gotenberg:
+    image: gotenberg/gotenberg:7
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - bigcapital
+
+networks:
+  bigcapital:
+    driver: bridge

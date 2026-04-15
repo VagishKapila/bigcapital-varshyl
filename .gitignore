@@ -1,0 +1,10 @@
+# Secrets — never commit real values
+.env.local
+.env.production
+
+# Keep .env for template reference (secrets are [GENERATE] placeholders)
+# .env is safe to commit — no real secrets inside
+
+node_modules/
+*.log
+.DS_Store
