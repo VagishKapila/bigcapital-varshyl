@@ -1,4 +1,4 @@
-:80 {
+:{$PORT:80} {
 	handle /api/* {
 		reverse_proxy https://server-v2-production-e222.up.railway.app {
 			header_up Host server-v2-production-e222.up.railway.app
