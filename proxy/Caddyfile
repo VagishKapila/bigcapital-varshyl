@@ -1,13 +1,21 @@
 :{$PORT:80} {
 	handle /api/* {
-		reverse_proxy server-v2.bigcapital.internal:3000
+		reverse_proxy https://server-production-874d4.up.railway.app {
+			header_up Host server-production-874d4.up.railway.app
+		}
 	}
 
 	handle /socket/* {
-		reverse_proxy server-v2.bigcapital.internal:3000
+		reverse_proxy https://server-production-874d4.up.railway.app {
+			header_up Host server-production-874d4.up.railway.app
+			header_up Connection {http.request.header.Connection}
+			header_up Upgrade {http.request.header.Upgrade}
+		}
 	}
 
 	handle {
-		reverse_proxy webapp.railway.internal:80
+		reverse_proxy https://webapp-production-1185.up.railway.app {
+			header_up Host webapp-production-1185.up.railway.app
+		}
 	}
 }
