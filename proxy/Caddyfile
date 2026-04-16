@@ -1,12 +1,12 @@
 :80 {
 	# Route API calls to the BigCapital server via private network
 	handle /api/* {
-		reverse_proxy server.bigcapital.internal:3000
+		reverse_proxy server-v2.bigcapital.internal:3000
 	}
 
 	# Route WebSocket connections to the server via private network
 	handle /socket/* {
-		reverse_proxy server.bigcapital.internal:3000
+		reverse_proxy server-v2.bigcapital.internal:3000
 	}
 
 	# Everything else goes to the BigCapital webapp via private network
