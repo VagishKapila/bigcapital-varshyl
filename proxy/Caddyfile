@@ -1,25 +1,16 @@
 :80 {
-	# Route API calls to the BigCapital server
+	# Route API calls to the BigCapital server via private network
 	handle /api/* {
-		reverse_proxy https://server-production-874d4.up.railway.app {
-			header_up Host server-production-874d4.up.railway.app
-			header_up X-Forwarded-Proto https
-		}
+		reverse_proxy server.bigcapital.internal:3000
 	}
 
-	# Route WebSocket connections to the server
+	# Route WebSocket connections to the server via private network
 	handle /socket/* {
-		reverse_proxy https://server-production-874d4.up.railway.app {
-			header_up Host server-production-874d4.up.railway.app
-			header_up X-Forwarded-Proto https
-		}
+		reverse_proxy server.bigcapital.internal:3000
 	}
 
-	# Everything else goes to the BigCapital webapp
+	# Everything else goes to the BigCapital webapp via private network
 	handle {
-		reverse_proxy https://webapp-production-1185.up.railway.app {
-			header_up Host webapp-production-1185.up.railway.app
-			header_up X-Forwarded-Proto https
-		}
+		reverse_proxy webapp.bigcapital.internal:80
 	}
 }
