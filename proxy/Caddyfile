@@ -1,13 +1,13 @@
 :{$PORT:80} {
 	handle /api/* {
-		reverse_proxy server-v2.bigcapital.internal:3000
+		reverse_proxy server-v2.railway.internal:3000
 	}
 
 	handle /socket/* {
-		reverse_proxy server-v2.bigcapital.internal:3000
+		reverse_proxy server-v2.railway.internal:3000
 	}
 
 	handle {
-		reverse_proxy webapp.bigcapital.internal:80
+		reverse_proxy webapp.railway.internal:80
 	}
 }
