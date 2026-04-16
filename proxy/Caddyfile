@@ -1,33 +1,19 @@
 :80 {
-	# Route API + WebSocket to server-v2 (migrate-on-boot, no S3)
 	handle /api/* {
 		reverse_proxy https://server-v2-production-e222.up.railway.app {
 			header_up Host server-v2-production-e222.up.railway.app
-			transport http {
-				tls_insecure_skip_verify
-				dial_timeout 30s
-				response_header_timeout 60s
-			}
 		}
 	}
 
 	handle /socket/* {
 		reverse_proxy https://server-v2-production-e222.up.railway.app {
 			header_up Host server-v2-production-e222.up.railway.app
-			transport http {
-				tls_insecure_skip_verify
-				dial_timeout 30s
-			}
 		}
 	}
 
-	# Everything else → webapp
 	handle {
 		reverse_proxy https://webapp-production-1185.up.railway.app {
 			header_up Host webapp-production-1185.up.railway.app
-			transport http {
-				tls_insecure_skip_verify
-			}
 		}
 	}
 }
