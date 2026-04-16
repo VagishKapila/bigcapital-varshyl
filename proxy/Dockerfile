@@ -1,3 +1,3 @@
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+FROM caddy:2-alpine
+COPY Caddyfile /etc/caddy/Caddyfile
 EXPOSE 80
